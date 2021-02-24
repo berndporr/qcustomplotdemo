@@ -1,4 +1,4 @@
-# qcustomplotdemo
+# QCustomPlot Demo
 
 ![alt tag](screenshot.png)
 
