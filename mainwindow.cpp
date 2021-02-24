@@ -1,12 +1,12 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent)
 {
   srand(QDateTime::currentDateTime().toTime_t());
 
-  centralWidget = new QWidget(MainWindow);
+  centralWidget = new QWidget();
   centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
   verticalLayout = new QVBoxLayout(centralWidget);
   verticalLayout->setSpacing(6);
@@ -51,17 +51,14 @@ MainWindow::MainWindow(QWidget *parent) :
   
   verticalLayout->addWidget(frame);
   
-  MainWindow->setCentralWidget(centralWidget);
-  menuBar = new QMenuBar(MainWindow);
+  setCentralWidget(centralWidget);
+  menuBar = new QMenuBar();
   menuBar->setObjectName(QString::fromUtf8("menuBar"));
-  MainWindow->setMenuBar(menuBar);
-  statusBar = new QStatusBar(MainWindow);
+  setMenuBar(menuBar);
+  statusBar = new QStatusBar();
   statusBar->setObjectName(QString::fromUtf8("statusBar"));
-  MainWindow->setStatusBar(statusBar);
+  setStatusBar(statusBar);
 
-
-  
-  
   customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
   customPlot->xAxis->setRange(-8, 8);
@@ -69,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
   customPlot->axisRect()->setupFullAxesBox();
   
   customPlot->plotLayout()->insertRow(0);
-  QCPTextElement *title = new QCPTextElement(ui->customPlot, "Interaction Example", QFont("sans", 17, QFont::Bold));
+  QCPTextElement *title = new QCPTextElement(customPlot, "Interaction Example", QFont("sans", 17, QFont::Bold));
   customPlot->plotLayout()->addElement(0, 0, title);
   
   customPlot->xAxis->setLabel("x Axis");
@@ -108,11 +105,23 @@ MainWindow::MainWindow(QWidget *parent) :
   // setup policy and connect slot for context menu popup:
   customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+
+  setWindowTitle("QCustomPlot Interaction Example");
+  label->setText("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Select the axes</span> to drag and zoom them individually.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Double click labels</span> or legend items to set user specified strings.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Left click</span> on graphs or legend to select graphs.</p>\n"
+"<p style=\" m"
+		 "argin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Right click</span> for a popup menu to add/remove graphs and move the legend</p></body></html>");
+
+  
 }
 
 MainWindow::~MainWindow()
 {
-  delete ui;
 }
 
 void MainWindow::titleDoubleClick(QMouseEvent* event)
