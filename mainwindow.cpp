@@ -77,12 +77,10 @@ MainWindow::MainWindow(QWidget *parent) :
   customPlot->legend->setFont(legendFont);
   customPlot->legend->setSelectedFont(legendFont);
   customPlot->legend->setSelectableParts(QCPLegend::spItems); // legend box shall not be selectable, only legend items
-  
+
+  addRealtimeGraph();
   addRandomGraph();
   addRandomGraph();
-  addRandomGraph();
-  addRandomGraph();
-  customPlot->rescaleAxes();
   
   // connect slot that ties some axis selections together (especially opposite axes):
   connect(customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
@@ -241,9 +239,39 @@ void MainWindow::mouseWheel()
     customPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
 }
 
+void MainWindow::addRealtimeGraph() {
+  customPlot->addGraph();
+  customPlot->graph()->setName(QString("Realtime"));
+  animdata.reset(new QCPDataContainer<QCPGraphData>);
+  for(int i=0;i<nRealtimePoints;i++) {
+    QCPGraphData data(i*dt,0);
+    animdata->add(data);
+  }
+  customPlot->graph()->setData(animdata);
+  QPen graphPen;
+  graphPen.setColor(QColor(rand()%245+10, rand()%245+10, rand()%245+10));
+  graphPen.setWidthF(2);
+  customPlot->graph()->setPen(graphPen);
+  customPlot->replot();
+  startTimer(40);
+}
+
+void MainWindow::timerEvent( QTimerEvent * ) {
+  // updates the realtime graph
+  // shift the values
+  for (auto i = animdata->end(); i != (animdata->begin()); --i) {
+    i->value = (i-1)->value;
+  }
+  QCPGraphData data(0,sin(t*5));
+  t = t + dt;
+  animdata->remove(0);
+  animdata->add(data);
+  customPlot->replot();
+}
+
 void MainWindow::addRandomGraph()
 {
-  int n = 50; // number of points in graph
+  int n = 2000; // number of points in graph
   double xScale = (rand()/(double)RAND_MAX + 0.5)*2;
   double yScale = (rand()/(double)RAND_MAX + 0.5)*2;
   double xOffset = (rand()/(double)RAND_MAX - 0.5)*4;
@@ -262,12 +290,9 @@ void MainWindow::addRandomGraph()
   customPlot->addGraph();
   customPlot->graph()->setName(QString("New graph %1").arg(customPlot->graphCount()-1));
   customPlot->graph()->setData(x, y);
-  customPlot->graph()->setLineStyle((QCPGraph::LineStyle)(rand()%5+1));
-  if (rand()%100 > 50)
-    customPlot->graph()->setScatterStyle(QCPScatterStyle((QCPScatterStyle::ScatterShape)(rand()%14+1)));
   QPen graphPen;
   graphPen.setColor(QColor(rand()%245+10, rand()%245+10, rand()%245+10));
-  graphPen.setWidthF(rand()/(double)RAND_MAX*2+1);
+  graphPen.setWidthF(2);
   customPlot->graph()->setPen(graphPen);
   customPlot->replot();
 }

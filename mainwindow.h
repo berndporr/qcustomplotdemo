@@ -23,7 +23,9 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
-  
+
+  	void timerEvent( QTimerEvent * );
+
 private slots:
 	void titleDoubleClick(QMouseEvent *event);
 	void axisLabelDoubleClick(QCPAxis* axis, QCPAxis::SelectablePart part);
@@ -32,6 +34,7 @@ private slots:
 	void mousePress();
 	void mouseWheel();
 	void addRandomGraph();
+	void addRealtimeGraph();
 	void removeSelectedGraph();
 	void removeAllGraphs();
 	void contextMenuRequest(QPoint pos);
@@ -49,6 +52,10 @@ private:
 	QLabel *label;
 	QMenuBar *menuBar;
 	QStatusBar *statusBar;
+	QSharedPointer<QCPDataContainer<QCPGraphData> > animdata;
+	const int nRealtimePoints = 500;
+	const double dt = 0.02;
+	double t = 0;
 };
 
 #endif // MAINWINDOW_H
