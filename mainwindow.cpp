@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
-  customPlot->xAxis->setRange(-8, 8);
+  customPlot->xAxis->setRange(-1, 8);
   customPlot->yAxis->setRange(-5, 5);
   customPlot->axisRect()->setupFullAxesBox();
   
@@ -256,16 +256,21 @@ void MainWindow::addRealtimeGraph() {
   startTimer(40);
 }
 
-void MainWindow::timerEvent( QTimerEvent * ) {
-  // updates the realtime graph
+void MainWindow::addRealtimeSample(double v) {
   // shift the values
   for (auto i = animdata->end(); i != (animdata->begin()); --i) {
     i->value = (i-1)->value;
   }
-  QCPGraphData data(0,sin(t*5));
-  t = t + dt;
-  animdata->remove(0);
-  animdata->add(data);
+  // add a new datapoint at the start
+  animdata->begin()->value = v;
+}
+
+void MainWindow::timerEvent( QTimerEvent * ) {
+  // demonstrates that adding a few samples before plotting speeds things up
+  for(int i = 0; i < 5; i++) {
+	  addRealtimeSample(sin(t*5));
+    t = t + dt;
+  }
   customPlot->replot();
 }
 

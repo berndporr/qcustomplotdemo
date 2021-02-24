@@ -25,6 +25,7 @@ public:
 	~MainWindow();
 
   	void timerEvent( QTimerEvent * );
+	void addRealtimeSample(double v);
 
 private slots:
 	void titleDoubleClick(QMouseEvent *event);

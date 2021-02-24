@@ -1,10 +1,36 @@
 # qcustomplotdemo
 
-The "interactive" example from Qcustomplot but built system is `cmake`
-and any QTdesiger code is removed.
+![alt tag](screenshot.png)
 
-https://www.qcustomplot.com/index.php/download
+The "interactive" example from Qcustomplot but built system is `cmake`
+and an efficient realtime plot has been added.
 
 Plots two random waves and one animated wave by shifting the
-samples by one step, then removing the 1st one and then adding
-a new one.
+samples by one step and then replacing the 1st sample by a new one.
+
+## Required packages
+
+Install the QT5 development packages:
+
+```
+    apt-get install qtdeclarative5-dev-tools
+```
+
+## Build it
+
+```
+    cmake .
+    make
+```
+
+## Run it
+
+```
+./qcustomplotdemo
+```
+
+## Credit
+
+QCustomPlot:
+
+https://www.qcustomplot.com/
