@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QInputDialog>
-#include "qcustomplot.h"
+#include <qcustomplot.h>
 #include <QtCore/QVariant>
 #include <QApplication>
 #include <QFrame>

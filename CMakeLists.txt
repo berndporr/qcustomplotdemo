@@ -17,7 +17,6 @@ find_package(Qt5 COMPONENTS Widgets PrintSupport REQUIRED)
 find_package(QCustomPlot)
 
 add_executable(qcustomplotdemo
-  qcustomplot.cpp
   mainwindow.cpp
   main.cpp
 )
