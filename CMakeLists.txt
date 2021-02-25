@@ -13,7 +13,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets PrintSupport REQUIRED)
+find_package(QCustomPlot)
 
 add_executable(qcustomplotdemo
   qcustomplot.cpp
@@ -21,6 +22,8 @@ add_executable(qcustomplotdemo
   main.cpp
 )
 
-target_link_libraries(qcustomplotdemo Qt5::Widgets Qt5PrintSupport)
+target_link_libraries(qcustomplotdemo
+  Qt5::Widgets Qt5::PrintSupport ${QCustomPlot_LIBRARIES}
+  )
 
 install(TARGETS qcustomplotdemo)

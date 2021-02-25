@@ -13,7 +13,8 @@ samples by one step and then replacing the 1st sample by a new one.
 Install the QT5 development packages:
 
 ```
-    apt-get install qtdeclarative5-dev-tools
+apt-get install qtdeclarative5-dev-tools
+apt-get install libqcustomplot-dev
 ```
 
 ## Build it
