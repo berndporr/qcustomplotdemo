@@ -7,13 +7,10 @@ MainWindow::MainWindow(QWidget *parent) :
   srand(QDateTime::currentDateTime().toTime_t());
 
   centralWidget = new QWidget();
-  centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
   verticalLayout = new QVBoxLayout(centralWidget);
   verticalLayout->setSpacing(6);
   verticalLayout->setContentsMargins(11, 11, 11, 11);
-  verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
   frame_2 = new QFrame(centralWidget);
-  frame_2->setObjectName(QString::fromUtf8("frame_2"));
   frame_2->setFrameShape(QFrame::StyledPanel);
   frame_2->setFrameShadow(QFrame::Sunken);
   frame_2->setLineWidth(1);
@@ -21,40 +18,24 @@ MainWindow::MainWindow(QWidget *parent) :
   verticalLayout_3 = new QVBoxLayout(frame_2);
   verticalLayout_3->setSpacing(0);
   verticalLayout_3->setContentsMargins(0, 0, 0, 0);
-  verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
   customPlot = new QCustomPlot(frame_2);
-  customPlot->setObjectName(QString::fromUtf8("customPlot"));
   QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
   sizePolicy.setHorizontalStretch(0);
   sizePolicy.setVerticalStretch(0);
   sizePolicy.setHeightForWidth(customPlot->sizePolicy().hasHeightForWidth());
   customPlot->setSizePolicy(sizePolicy);
-  
   verticalLayout_3->addWidget(customPlot);
-  
-  
   verticalLayout->addWidget(frame_2);
-  
   frame = new QFrame(centralWidget);
-  frame->setObjectName(QString::fromUtf8("frame"));
   frame->setFrameShape(QFrame::StyledPanel);
   frame->setFrameShadow(QFrame::Raised);
   verticalLayout_2 = new QVBoxLayout(frame);
   verticalLayout_2->setSpacing(6);
   verticalLayout_2->setContentsMargins(11, 11, 11, 11);
-  verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
   label = new QLabel(frame);
-  label->setObjectName(QString::fromUtf8("label"));
-  
   verticalLayout_2->addWidget(label);
-  
-  
   verticalLayout->addWidget(frame);
-  
   setCentralWidget(centralWidget);
-  menuBar = new QMenuBar();
-  menuBar->setObjectName(QString::fromUtf8("menuBar"));
-  setMenuBar(menuBar);
   statusBar = new QStatusBar();
   statusBar->setObjectName(QString::fromUtf8("statusBar"));
   setStatusBar(statusBar);
@@ -66,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
   customPlot->axisRect()->setupFullAxesBox();
   
   customPlot->plotLayout()->insertRow(0);
-  QCPTextElement *title = new QCPTextElement(customPlot, "Interaction Example", QFont("sans", 17, QFont::Bold));
+  QCPTextElement *title = new QCPTextElement(customPlot, "Interaction & Realtime Example", QFont("sans", 17, QFont::Bold));
   customPlot->plotLayout()->addElement(0, 0, title);
   
   customPlot->xAxis->setLabel("x Axis");
@@ -116,10 +97,6 @@ MainWindow::MainWindow(QWidget *parent) :
 		 "argin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Right click</span> for a popup menu to add/remove graphs and move the legend</p></body></html>");
 
   
-}
-
-MainWindow::~MainWindow()
-{
 }
 
 void MainWindow::titleDoubleClick(QMouseEvent* event)
