@@ -1,26 +1,23 @@
-# QCustomPlot Demo
+# QCustomPlot Demo with realtime animation
 
 ![alt tag](screenshot.png)
 
-The "interactive" example from Qcustomplot but built system is `cmake`
-and an efficient realtime plot has been added.
-
-Plots two random waves and one animated wave by shifting the
-samples by one step and then replacing the 1st sample by a new one.
+Plots two random waves and one "realtime" wave by adding samples
+continuously at at t=0.
 
 ## Required packages
 
 Install the QT5 development packages:
 
 ```
-    apt-get install qtdeclarative5-dev-tools
+apt-get install qtdeclarative5-dev-tools
 ```
 
 ## Build it
 
 ```
-    cmake .
-    make
+cmake .
+make
 ```
 
 ## Run it
@@ -31,6 +28,6 @@ Install the QT5 development packages:
 
 ## Credit
 
-QCustomPlot:
+Based on the "interactive" example from Qcustomplot:
 
 https://www.qcustomplot.com/
