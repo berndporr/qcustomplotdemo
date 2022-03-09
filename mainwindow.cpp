@@ -6,10 +6,8 @@ const char instructionsTxt[] =
 		       "p, li { white-space: pre-wrap; }\n"
 		       "</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
 		       "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Select the axes</span> to drag and zoom them individually.</p>\n"
-		       "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Double click labels</span> or legend items to set user specified strings.</p>\n"
 		       "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Left click</span> on graphs or legend to select graphs.</p>\n"
-		       "<p style=\" m"
-	"argin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">Right click</span> for a popup menu to add/remove graphs and move the legend</p></body></html>";
+		       "</body></html>";
 
 const char titleTxt[] = "QCustomPlot Interaction and Realtime example";
 
@@ -73,118 +71,19 @@ MainWindow::MainWindow(QWidget *parent) :
 	addRealtimeGraph();
 	addRandomGraph();
 	addRandomGraph();
-  
-	// connect slot that ties some axis selections together (especially opposite axes):
-	connect(customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
-	// connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
-	connect(customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
-	connect(customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
-  
-	// make bottom and left axes transfer their ranges to top and right axes:
-	connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->xAxis2, SLOT(setRange(QCPRange)));
-	connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->yAxis2, SLOT(setRange(QCPRange)));
-  
-	// connect some interaction slots:
-	connect(customPlot, SIGNAL(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)), this, SLOT(axisLabelDoubleClick(QCPAxis*,QCPAxis::SelectablePart)));
-	connect(customPlot, SIGNAL(legendDoubleClick(QCPLegend*,QCPAbstractLegendItem*,QMouseEvent*)), this, SLOT(legendDoubleClick(QCPLegend*,QCPAbstractLegendItem*)));
-	connect(title, SIGNAL(doubleClicked(QMouseEvent*)), this, SLOT(titleDoubleClick(QMouseEvent*)));
-  
-	// connect slot that shows a message in the status bar when a graph is clicked:
-	connect(customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
-  
-	// setup policy and connect slot for context menu popup:
-	customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
 
+	// mouse events callbacks
+	connect(customPlot, &QCustomPlot::mousePress,
+		this, &MainWindow::mousePress);
+	connect(customPlot, &QCustomPlot::mouseWheel,
+		this, &MainWindow::mouseWheel);
+  
+	// connect callback that shows a message in the status bar when a graph is clicked:
+	connect(customPlot, &QCustomPlot::plottableClick,
+		this, &MainWindow::graphClicked);
+  
 	setWindowTitle(titleTxt);
 	label->setText(instructionsTxt);
-}
-
-void MainWindow::titleDoubleClick(QMouseEvent* event) {
-	Q_UNUSED(event)
-		if (QCPTextElement *title = qobject_cast<QCPTextElement*>(sender()))
-		{
-			// Set the plot title by double clicking on it
-			bool ok;
-			QString newTitle = QInputDialog::getText(this, "QCustomPlot example", "New plot title:", QLineEdit::Normal, title->text(), &ok);
-			if (ok)
-			{
-				title->setText(newTitle);
-				customPlot->replot();
-			}
-		}
-}
-
-void MainWindow::axisLabelDoubleClick(QCPAxis *axis, QCPAxis::SelectablePart part) {
-	// Set an axis label by double clicking on it
-	if (part == QCPAxis::spAxisLabel) // only react when the actual axis label is clicked, not tick label or axis backbone
-	{
-		bool ok;
-		QString newLabel = QInputDialog::getText(this, "QCustomPlot example", "New axis label:", QLineEdit::Normal, axis->label(), &ok);
-		if (ok)
-		{
-			axis->setLabel(newLabel);
-			customPlot->replot();
-		}
-	}
-}
-
-void MainWindow::legendDoubleClick(QCPLegend *legend, QCPAbstractLegendItem *item) {
-	// Rename a graph by double clicking on its legend item
-	Q_UNUSED(legend)
-		if (item) // only react if item was clicked (user could have clicked on border padding of legend where there is no item, then item is 0)
-		{
-			QCPPlottableLegendItem *plItem = qobject_cast<QCPPlottableLegendItem*>(item);
-			bool ok;
-			QString newName = QInputDialog::getText(this, "QCustomPlot example", "New graph name:", QLineEdit::Normal, plItem->plottable()->name(), &ok);
-			if (ok)
-			{
-				plItem->plottable()->setName(newName);
-				customPlot->replot();
-			}
-		}
-}
-
-void MainWindow::selectionChanged() {
-	/*
-	  normally, axis base line, axis tick labels and axis labels are selectable separately, but we want
-	  the user only to be able to select the axis as a whole, so we tie the selected states of the tick labels
-	  and the axis base line together. However, the axis label shall be selectable individually.
-   
-	  The selection state of the left and right axes shall be synchronized as well as the state of the
-	  bottom and top axes.
-   
-	  Further, we want to synchronize the selection of the graphs with the selection state of the respective
-	  legend item belonging to that graph. So the user can select a graph by either clicking on the graph itself
-	  or on its legend item.
-	*/
-  
-	// make top and bottom axes be selected synchronously, and handle axis and tick labels as one selectable object:
-	if (customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis) || customPlot->xAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
-	    customPlot->xAxis2->selectedParts().testFlag(QCPAxis::spAxis) || customPlot->xAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
-	{
-		customPlot->xAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-		customPlot->xAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-	}
-	// make left and right axes be selected synchronously, and handle axis and tick labels as one selectable object:
-	if (customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis) || customPlot->yAxis->selectedParts().testFlag(QCPAxis::spTickLabels) ||
-	    customPlot->yAxis2->selectedParts().testFlag(QCPAxis::spAxis) || customPlot->yAxis2->selectedParts().testFlag(QCPAxis::spTickLabels))
-	{
-		customPlot->yAxis2->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-		customPlot->yAxis->setSelectedParts(QCPAxis::spAxis|QCPAxis::spTickLabels);
-	}
-  
-	// synchronize selection of graphs with selection of corresponding legend items:
-	for (int i=0; i<customPlot->graphCount(); ++i)
-	{
-		QCPGraph *graph = customPlot->graph(i);
-		QCPPlottableLegendItem *item = customPlot->legend->itemWithPlottable(graph);
-		if (item->selected() || graph->selected())
-		{
-			item->setSelected(true);
-			graph->setSelection(QCPDataSelection(graph->data()->dataRange()));
-		}
-	}
 }
 
 void MainWindow::mousePress() {
@@ -284,29 +183,6 @@ void MainWindow::removeSelectedGraph() {
 void MainWindow::removeAllGraphs() {
 	customPlot->clearGraphs();
 	customPlot->replot();
-}
-
-void MainWindow::contextMenuRequest(QPoint pos) {
-	QMenu *menu = new QMenu(this);
-	menu->setAttribute(Qt::WA_DeleteOnClose);
-  
-	if (customPlot->legend->selectTest(pos, false) >= 0) // context menu on legend requested
-	{
-		menu->addAction("Move to top left", this, SLOT(moveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignLeft));
-		menu->addAction("Move to top center", this, SLOT(moveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignHCenter));
-		menu->addAction("Move to top right", this, SLOT(moveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignRight));
-		menu->addAction("Move to bottom right", this, SLOT(moveLegend()))->setData((int)(Qt::AlignBottom|Qt::AlignRight));
-		menu->addAction("Move to bottom left", this, SLOT(moveLegend()))->setData((int)(Qt::AlignBottom|Qt::AlignLeft));
-	} else  // general context menu on graphs requested
-	{
-		menu->addAction("Add random graph", this, SLOT(addRandomGraph()));
-		if (customPlot->selectedGraphs().size() > 0)
-			menu->addAction("Remove selected graph", this, SLOT(removeSelectedGraph()));
-		if (customPlot->graphCount() > 0)
-			menu->addAction("Remove all graphs", this, SLOT(removeAllGraphs()));
-	}
-  
-	menu->popup(customPlot->mapToGlobal(pos));
 }
 
 void MainWindow::moveLegend() {

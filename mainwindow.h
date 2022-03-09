@@ -26,22 +26,16 @@ public:
   	void timerEvent( QTimerEvent * );
 	void addRealtimeSample(double v);
 
-private slots:
-	void titleDoubleClick(QMouseEvent *event);
-	void axisLabelDoubleClick(QCPAxis* axis, QCPAxis::SelectablePart part);
-	void legendDoubleClick(QCPLegend* legend, QCPAbstractLegendItem* item);
-	void selectionChanged();
+private:
 	void mousePress();
 	void mouseWheel();
 	void addRandomGraph();
 	void addRealtimeGraph();
 	void removeSelectedGraph();
 	void removeAllGraphs();
-	void contextMenuRequest(QPoint pos);
 	void moveLegend();
 	void graphClicked(QCPAbstractPlottable *plottable, int dataIndex);
   
-private:
 	QWidget *centralWidget;
 	QVBoxLayout *verticalLayout;
 	QFrame *frame_2;
